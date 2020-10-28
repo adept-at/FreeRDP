@@ -376,6 +376,8 @@ static const COMMAND_LINE_ARGUMENT_A args[] = {
 	{ "wm-class", COMMAND_LINE_VALUE_REQUIRED, "<class-name>", NULL, NULL, -1, NULL,
 	  "Set the WM_CLASS hint for the window instance" },
 	{ "workarea", COMMAND_LINE_VALUE_FLAG, NULL, NULL, NULL, -1, NULL, "Use available work area" },
+	{ "adept-port", COMMAND_LINE_VALUE_OPTIONAL, "<port>", NULL, NULL, -1, NULL, "Adept Port" },
+	{ "adept-windowid", COMMAND_LINE_VALUE_OPTIONAL, "<windowid>", NULL, NULL, -1, NULL, "Adept Windowid" },
 	{ NULL, 0, NULL, NULL, NULL, -1, NULL, NULL }
 };
 #endif /* CLIENT_COMMON_CMDLINE_H */

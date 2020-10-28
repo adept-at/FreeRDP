@@ -3283,6 +3283,24 @@ int freerdp_client_settings_parse_command_line_arguments(rdpSettings* settings, 
 			}
 			return COMMAND_LINE_STATUS_PRINT;
 		}
+		CommandLineSwitchCase(arg, "adept-port")
+		{
+			LONGLONG val;
+
+			if (!value_to_int(arg->Value, &val, 0, UINT32_MAX))
+				return COMMAND_LINE_ERROR_UNEXPECTED_VALUE;
+
+			settings->AdeptAppPort = (UINT32)val;
+		}
+		CommandLineSwitchCase(arg, "adept-windowid")
+		{
+			LONGLONG val;
+
+			if (!value_to_int(arg->Value, &val, 0, UINT32_MAX))
+				return COMMAND_LINE_ERROR_UNEXPECTED_VALUE;
+
+			settings->AdeptWindowId = (UINT32)val;
+		}
 		CommandLineSwitchDefault(arg)
 		{
 		}

@@ -359,19 +359,61 @@ static BOOL wf_post_connect(freerdp* instance)
 	if (settings->EmbeddedWindow)
 		settings->Decorations = FALSE;
 
-	if (wfc->fullscreen)
-		dwStyle = WS_POPUP;
+	dwStyle = WS_POPUP;
+	settings->Decorations = FALSE;
+
+	/*
+	    if (wfc->fullscreen)
+	    dwStyle = WS_POPUP;
 	else if (!settings->Decorations)
-		dwStyle = WS_CHILD | WS_BORDER;
+	    dwStyle = WS_CHILD | WS_BORDER;
 	else
-		dwStyle =
-		    WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX | WS_SIZEBOX | WS_MAXIMIZEBOX;
+	    dwStyle =
+	        WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX | WS_SIZEBOX | WS_MAXIMIZEBOX;
+
+	*/
 
 	if (!wfc->hwnd)
 	{
 		wfc->hwnd = CreateWindowEx((DWORD)NULL, wfc->wndClassName, wfc->window_title, dwStyle, 0, 0,
 		                           0, 0, wfc->hWndParent, NULL, wfc->hInstance, NULL);
 		SetWindowLongPtr(wfc->hwnd, GWLP_USERDATA, (LONG_PTR)wfc);
+
+		if (settings->AdeptAppPort >= 0)
+		{
+			wfc->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+			if (wfc->sockfd < 0)
+			{
+				fprintf(stderr, "ERROR opening socket: %d\n", errno);
+			}
+			else 
+			{
+				struct sockaddr_in serv_addr = { 0 };
+				serv_addr.sin_family = AF_INET;
+				serv_addr.sin_port = htons(settings->AdeptAppPort);
+				serv_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+				fprintf(stderr, "Connecting to localhost %d ...\n", settings->AdeptAppPort);
+
+				if (connect(wfc->sockfd, (struct sockaddr*)&serv_addr, sizeof(struct sockaddr_in)) <
+				    0)
+				{
+					fprintf(stderr, "ERROR connecting to port %d: %d\n", settings->AdeptAppPort,
+					        errno);
+					close(wfc->sockfd);
+					wfc->sockfd = -1;
+				}
+
+				char startupMsg[256];
+
+				sprintf(startupMsg, "{ \"adeptWindowId\": %d, \"nativeWindowId\": %d }",
+				        settings->AdeptWindowId, (int)wfc->hwnd);
+
+				send(wfc->sockfd, startupMsg, 256, 0);
+			}
+		}
+		// SetWindowLong(wfc->hwnd, GWL_STYLE, 0);
+		//SetForegroundWindow(wfc->hwnd);
 	}
 
 	wf_resize_window(wfc);
@@ -1017,8 +1059,8 @@ void wf_size_scrollbars(wfContext* wfc, UINT32 client_width, UINT32 client_heigh
 
 static BOOL wfreerdp_client_global_init(void)
 {
+	// Electron already does this
 	WSADATA wsaData;
-
 	WSAStartup(0x101, &wsaData);
 
 	freerdp_register_addin_provider(freerdp_channels_load_static_addin_entry, 0);
@@ -1027,6 +1069,7 @@ static BOOL wfreerdp_client_global_init(void)
 
 static void wfreerdp_client_global_uninit(void)
 {
+	// No need - electron handles this for us
 	WSACleanup();
 }
 

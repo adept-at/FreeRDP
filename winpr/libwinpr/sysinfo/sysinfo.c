@@ -539,7 +539,7 @@ DWORD GetTickCount(void)
 
 #endif
 
-#if (!defined(_WIN32)) || (defined(_WIN32) && (_WIN32_WINNT < 0x0600))
+#if (!defined(_WIN32)) || (defined(_WIN32) && (_WIN32_WINNT < 0x0501))
 
 ULONGLONG winpr_GetTickCount64(void)
 {

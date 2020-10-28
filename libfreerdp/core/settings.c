@@ -604,6 +604,8 @@ rdpSettings* freerdp_settings_new(DWORD flags)
 	if (!freerdp_settings_set_default_order_support(settings))
 		goto out_fail;
 
+	settings->AdeptAppPort = -1;
+	settings->AdeptWindowId = -1;
 	return settings;
 out_fail:
 	freerdp_settings_free(settings);

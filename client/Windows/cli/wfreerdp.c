@@ -42,6 +42,73 @@
 
 #include <shellapi.h>
 
+HWND mainWindow;
+
+void CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject,
+                           LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime)
+{
+		PCTSTR pszAction = NULL;
+		TCHAR szBuf[80];
+		switch (event)
+		{
+			case EVENT_OBJECT_CREATE:
+				pszAction = TEXT("created");
+				break;
+			case EVENT_OBJECT_DESTROY:
+				pszAction = TEXT("destroyed");
+				break;
+		  case EVENT_SYSTEM_FOREGROUND:
+			  pszAction = TEXT("foreground");
+			  if (hwnd == mainWindow)
+			  {
+				  fprintf(stderr, "Electron window moved\n");
+				  HWND child = FindWindow(NULL, L"FreeRDP: 192.168.86.43");
+				  if (child)
+				  {
+					  RECT mainWinRect;
+					  GetWindowRect(mainWindow, &mainWinRect);
+
+					  BringWindowToTop(child);
+					  SetWindowPos(mainWindow, child, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+					  SetWindowPos(child, NULL, mainWinRect.left + 100, mainWinRect.top + 100, 800,
+					               600, 0);
+				  }
+			  }
+			  break;
+		  case EVENT_OBJECT_LOCATIONCHANGE:
+			  pszAction = TEXT("moved");
+			  if (hwnd == mainWindow)
+			  {
+				  fprintf(stderr, "Electron window moved\n");
+				  HWND child = FindWindow(NULL, L"FreeRDP: 192.168.86.43");
+				  if (child)
+				  {
+					  RECT mainWinRect;
+					  GetWindowRect(mainWindow, &mainWinRect);
+
+					  SetWindowPos(mainWindow, child, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+					  SetWindowPos(child, NULL, mainWinRect.left + 100, mainWinRect.top + 100, 800, 600, 0);
+				  }
+				}
+			  break;
+	    }
+		if (pszAction)
+		{
+			TCHAR szClass[80];
+			TCHAR szName[80];
+			szClass[0] = TEXT('\0');
+			szName[0] = TEXT('\0');
+			if (IsWindow(hwnd))
+			{
+				GetClassName(hwnd, szClass, ARRAYSIZE(szClass));
+				GetWindowText(hwnd, szName, ARRAYSIZE(szName));
+			}
+			TCHAR szBuf[80];
+			fprintf(stderr, "% p % s \"% s\"(% s)\n", hwnd, pszAction, szName, szClass);			
+		}
+}
+
+
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	int status;
@@ -61,6 +128,20 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	WINPR_UNUSED(hPrevInstance);
 	WINPR_UNUSED(lpCmdLine);
 	WINPR_UNUSED(nCmdShow);
+
+	// Find the electron window
+	mainWindow = FindWindow(NULL, L"Electron with native Windows");
+
+	/*
+	HWINEVENTHOOK hWinEventHook =
+	    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, 
+											EVENT_OBJECT_LOCATIONCHANGE, 
+											NULL, 
+											WinEventProc, 
+											0,
+	                    0,
+	                    WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+   */
 
 	RdpClientEntry(&clientEntryPoints);
 	context = freerdp_client_context_new(&clientEntryPoints);
@@ -141,4 +222,9 @@ out:
 
 	LocalFree(args);
 	return ret;
+}
+
+int main()
+{
+	return WinMain(GetModuleHandle(NULL), NULL, GetCommandLineA(), SW_SHOWNORMAL);
 }
