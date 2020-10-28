@@ -412,8 +412,6 @@ static BOOL wf_post_connect(freerdp* instance)
 				send(wfc->sockfd, startupMsg, 256, 0);
 			}
 		}
-		// SetWindowLong(wfc->hwnd, GWL_STYLE, 0);
-		//SetForegroundWindow(wfc->hwnd);
 	}
 
 	wf_resize_window(wfc);
