@@ -375,7 +375,8 @@ static BOOL wf_post_connect(freerdp* instance)
 
 	if (!wfc->hwnd)
 	{
-		wfc->hwnd = CreateWindowEx((DWORD)NULL, wfc->wndClassName, wfc->window_title, dwStyle, 0, 0,
+		wfc->hwnd = CreateWindowEx(WS_EX_TOOLWINDOW, wfc->wndClassName, wfc->window_title, dwStyle,
+		                   0, 0,
 		                           0, 0, wfc->hWndParent, NULL, wfc->hInstance, NULL);
 		SetWindowLongPtr(wfc->hwnd, GWLP_USERDATA, (LONG_PTR)wfc);
 
