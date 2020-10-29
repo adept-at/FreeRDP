@@ -343,7 +343,8 @@ void wf_resize_window(wfContext* wfc)
 	}
 	else if (!wfc->context.settings->Decorations)
 	{
-		SetWindowLongPtr(wfc->hwnd, GWL_STYLE, WS_CHILD);
+		// Setting it to a child window messes up focus
+		// SetWindowLongPtr(wfc->hwnd, GWL_STYLE, WS_CHILD);
 
 		if (settings->EmbeddedWindow)
 		{

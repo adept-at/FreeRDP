@@ -390,9 +390,6 @@ LRESULT CALLBACK wf_event_proc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
 			case WM_LBUTTONUP:
 				wf_scale_mouse_event(wfc, input, PTR_FLAGS_BUTTON1, X_POS(lParam) - wfc->offset_x,
 				                     Y_POS(lParam) - wfc->offset_y);
-				// HACK to get focus back
-				g_focus_hWnd = wfc->hwnd;
-				freerdp_set_focus(wfc->context.instance);
 				break;
 
 			case WM_RBUTTONDOWN:

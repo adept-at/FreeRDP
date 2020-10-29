@@ -400,16 +400,17 @@ static BOOL wf_post_connect(freerdp* instance)
 				{
 					fprintf(stderr, "ERROR connecting to port %d: %d\n", settings->AdeptAppPort,
 					        errno);
-					close(wfc->sockfd);
-					wfc->sockfd = -1;
+				}
+				else
+				{
+					char startupMsg[256];
+
+					sprintf(startupMsg, "{ \"adeptWindowId\": %d, \"nativeWindowId\": %d }",
+					        settings->AdeptWindowId, (int)wfc->hwnd);
+
+					send(wfc->sockfd, startupMsg, 256, 0);
 				}
 
-				char startupMsg[256];
-
-				sprintf(startupMsg, "{ \"adeptWindowId\": %d, \"nativeWindowId\": %d }",
-				        settings->AdeptWindowId, (int)wfc->hwnd);
-
-				send(wfc->sockfd, startupMsg, 256, 0);
 			}
 		}
 	}
