@@ -376,8 +376,8 @@ static BOOL wf_post_connect(freerdp* instance)
 	if (!wfc->hwnd)
 	{
 		wfc->hwnd = CreateWindowEx(WS_EX_TOOLWINDOW, wfc->wndClassName, wfc->window_title, dwStyle,
-		                   0, 0,
-		                           0, 0, wfc->hWndParent, NULL, wfc->hInstance, NULL);
+		                   settings->DesktopPosX, settings->DesktopPosY, settings->DesktopWidth,
+		                   settings->DesktopHeight, wfc->hWndParent, NULL, wfc->hInstance, NULL);
 		SetWindowLongPtr(wfc->hwnd, GWLP_USERDATA, (LONG_PTR)wfc);
 
 		if (settings->AdeptAppPort >= 0)
@@ -387,7 +387,7 @@ static BOOL wf_post_connect(freerdp* instance)
 			{
 				fprintf(stderr, "ERROR opening socket: %d\n", errno);
 			}
-			else 
+			else
 			{
 				struct sockaddr_in serv_addr = { 0 };
 				serv_addr.sin_family = AF_INET;
@@ -411,10 +411,8 @@ static BOOL wf_post_connect(freerdp* instance)
 
 					send(wfc->sockfd, startupMsg, 256, 0);
 				}
-
 			}
 		}
-	}
 
 	wf_resize_window(wfc);
 	wf_add_system_menu(wfc);
@@ -444,6 +442,10 @@ static BOOL wf_post_connect(freerdp* instance)
 	}
 
 	wfc->floatbar = wf_floatbar_new(wfc, wfc->hInstance, settings->Floatbar);
+
+
+	}
+
 	return TRUE;
 }
 

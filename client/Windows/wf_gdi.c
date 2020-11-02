@@ -363,7 +363,7 @@ void wf_resize_window(wfContext* wfc)
 		else
 		{
 			/* Now resize to get full canvas size and room for caption and borders */
-			SetWindowPos(wfc->hwnd, HWND_TOP, 0, 0, settings->DesktopWidth, settings->DesktopHeight,
+			SetWindowPos(wfc->hwnd, HWND_TOP, settings->DesktopPosX, settings->DesktopPosY, settings->DesktopWidth, settings->DesktopHeight,
 			             SWP_FRAMECHANGED);
 			wf_update_canvas_diff(wfc);
 			SetWindowPos(wfc->hwnd, HWND_TOP, -1, -1, settings->DesktopWidth + wfc->diff.x,

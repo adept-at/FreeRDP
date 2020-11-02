@@ -986,8 +986,8 @@ struct rdp_settings
 	ALIGN64 BOOL SpanMonitors;           /*    387 */
 	ALIGN64 BOOL UseMultimon;            /*    388 */
 	ALIGN64 BOOL ForceMultimon;          /*    389 */
-	ALIGN64 UINT32 DesktopPosX;          /*    390 */
-	ALIGN64 UINT32 DesktopPosY;          /*    391 */
+	ALIGN64 INT32 DesktopPosX;          /*    390 */
+	ALIGN64 INT32 DesktopPosY;          /*    391 */
 	ALIGN64 BOOL ListMonitors;           /*    392 */
 	ALIGN64 UINT32* MonitorIds;          /*    393 */
 	ALIGN64 UINT32 NumMonitorIds;        /*    394 */

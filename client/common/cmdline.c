@@ -1535,6 +1535,48 @@ static BOOL parseSizeValue(const char* input, unsigned long* v1, unsigned long* 
 	return TRUE;
 }
 
+/**
+ * parses a string value with the format <v1>x<v2>
+ * @param input: input string
+ * @param v1: pointer to output v1
+ * @param v2: pointer to output v2
+ * @return if the parsing was successful
+ */
+static BOOL parsePositionValue(const char* input,  long* v1,  long* v2)
+{
+	const char* xcharpos;
+	char* endPtr;
+	unsigned long v;
+	errno = 0;
+
+	v = strtol(input, &endPtr, 10);
+
+	if ((v == 0 || v == LONG_MAX) && (errno != 0))
+		return FALSE;
+
+	if (v1)
+		*v1 = v;
+
+	xcharpos = strchr(input, 'x');
+
+	if (!xcharpos || xcharpos != endPtr)
+		return FALSE;
+
+	errno = 0;
+	v = strtol(xcharpos + 1, &endPtr, 10);
+
+	if ((v == 0 || v == LONG_MAX) && (errno != 0))
+		return FALSE;
+
+	if (*endPtr != '\0')
+		return FALSE;
+
+	if (v2)
+		*v2 = v;
+
+	return TRUE;
+}
+
 int freerdp_client_settings_parse_command_line_arguments(rdpSettings* settings, int argc,
                                                          char** argv, BOOL allowUnknown)
 {
@@ -2426,19 +2468,19 @@ int freerdp_client_settings_parse_command_line_arguments(rdpSettings* settings, 
 		}
 		CommandLineSwitchCase(arg, "window-position")
 		{
-			unsigned long x, y;
+			long x, y;
 
 			if (!arg->Value)
 				return COMMAND_LINE_ERROR_MISSING_ARGUMENT;
 
-			if (!parseSizeValue(arg->Value, &x, &y) || x > UINT16_MAX || y > UINT16_MAX)
+			if (!parsePositionValue(arg->Value, &x, &y) || x > INT32_MAX || y > INT32_MAX)
 			{
 				WLog_ERR(TAG, "invalid window-position argument");
 				return COMMAND_LINE_ERROR_MISSING_ARGUMENT;
 			}
 
-			settings->DesktopPosX = (UINT32)x;
-			settings->DesktopPosY = (UINT32)y;
+			settings->DesktopPosX = (INT32)x;
+			settings->DesktopPosY = (INT32)y;
 		}
 		CommandLineSwitchCase(arg, "menu-anims")
 		{
